@@ -1,0 +1,24 @@
+---
+# tasks file for waal70.dev_tools
+- name: "Set fact for user to run docker exec under"
+  ansible.builtin.set_fact:
+    docker_exec_user: "{{ ansible_facts['env'].SUDO_USER | default(ansible_facts['env'].USER, true) | default(ansible_facts['user_id'], true) }}"
+
+- name: "Template the nginx.yml file to the role's files/ directory"
+  ansible.builtin.template:
+    src: nginx.yml.j2
+    dest: "{{ role_path }}/files/nginx.yml"
+    owner: "{{ interactive_user }}"
+    group: "{{ interactive_user }}"
+    mode: '0644'
+    force: true
+  delegate_to: localhost
+
+- name: "Include role to deploy using Portainer"
+  ansible.builtin.include_role:
+    name: waal70.portainer
+  vars:
+    stack_list:
+      - name: nginx-pm
+        file: nginx.yml # file is in files/ of this role
+        nginx_reverse_proxy_enable: true
