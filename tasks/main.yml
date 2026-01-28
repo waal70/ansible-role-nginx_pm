@@ -21,4 +21,3 @@
     stack_list:
       - name: nginx-pm
         file: nginx.yml # file is in files/ of this role
-        nginx_reverse_proxy_enable: true
